@@ -32,6 +32,21 @@ class App extends React.Component {
     });
   }
 
+  getCSRF2 = () => {
+    return fetch("http://zoo.com:8000/auth_app/csrf/", {
+      credentials: "include",
+    })
+    .then((res) => {
+      let csrfToken = res.headers.get("X-CSRFToken");
+      this.setState({csrf: csrfToken});
+      console.log(csrfToken);
+      return (csrfToken)
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
   getSession = () => {
     fetch("http://zoo.com:8000/auth_app/session/", {
       credentials: "include",
@@ -133,9 +148,45 @@ class App extends React.Component {
     });
   };
 
+   tiger_post = async () => {
+    fetch("http://zoo.com:8000/api/tiger/test_tiger_post/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": await this.getCSRF2(),
+      },
+      credentials: "include",
+    })
+    .then(this.isResponseOk)
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  };
+
 
   lion = () => {
     fetch("http://zoo.com:9000/api/lion/test_lion", {
+      credentials: "include",
+    })
+    .then(this.isResponseOk)
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  };
+
+  lion_post = async () => {
+    fetch("http://zoo.com:9000/api/lion/test_lion_post/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": await this.getCSRF2(),
+      },
       credentials: "include",
     })
     .then(this.isResponseOk)
@@ -155,8 +206,10 @@ class App extends React.Component {
         <div className="container mt-3">
           <h1>React Cookie Auth</h1>
           <br />
-          <button className="btn btn-primary mr-3" onClick={this.tiger}>Tiger</button>   
-          <button className="btn btn-primary mr-3" onClick={this.lion}>Lion</button> 
+          <button className="btn btn-primary mr-3" onClick={this.tiger}>GET_Tiger_8000</button>
+          <button className="btn btn-primary mr-3" style = {{backgroundColor:'green'}} onClick={this.tiger_post}>POST_Tiger_8000</button>
+          <button className="btn btn-primary mr-3" onClick={this.lion}>GET_Lion_9000</button>
+          <button className="btn btn-primary mr-3" style = {{backgroundColor:'green'}} onClick={this.lion_post}>POST_Lion_9000</button>
           <h2>Login</h2>
           <form onSubmit={this.login}>
             <div className="form-group">
@@ -174,7 +227,7 @@ class App extends React.Component {
                 }
               </div>
             </div>
-            <button type="submit" className="btn btn-primary">Login</button>
+            <button type="submit" style = {{backgroundColor:'#ff5c5c'}} className="btn btn-primary">Login_8000</button>
           </form>
         </div>
       );
@@ -183,10 +236,12 @@ class App extends React.Component {
       <div className="container mt-3">
         <h1>React Cookie Auth</h1>
         <p>You are logged in!</p>
-        <button className="btn btn-primary mr-2" onClick={this.whoami}>WhoAmI</button>
-        <button className="btn btn-primary mr-3" onClick={this.logout}>Log out</button>
-        <button className="btn btn-primary mr-3" onClick={this.tiger}>Tiger</button>        
-        <button className="btn btn-primary mr-3" onClick={this.lion}>Lion</button> 
+        <button className="btn btn-primary mr-2" style = {{backgroundColor:'#ff5c5c'}} onClick={this.whoami}>WhoAmI_8000</button>
+        <button className="btn btn-primary mr-3" style = {{backgroundColor:'#ff5c5c'}} onClick={this.logout}>Log out_8000</button>
+        <button className="btn btn-primary mr-3"  onClick={this.tiger}>GET_Tiger_8000</button>
+          <button className="btn btn-primary mr-3" style = {{backgroundColor:'green'}} onClick={this.tiger_post}>POST_Tiger_8000</button>
+        <button className="btn btn-primary mr-3" onClick={this.lion}>GET_Lion_9000</button>
+        <button className="btn btn-primary mr-3" style = {{backgroundColor:'green'}} onClick={this.lion_post}>POST_Lion_9000</button>
       </div>
     )
   }
