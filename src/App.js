@@ -1,4 +1,6 @@
 import React from "react";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 class App extends React.Component {
 
@@ -25,7 +27,7 @@ class App extends React.Component {
     .then((res) => {
       let csrfToken = res.headers.get("X-CSRFToken");
       this.setState({csrf: csrfToken});
-      console.log(csrfToken);
+      //console.log(csrfToken);
     })
     .catch((err) => {
       console.log(err);
@@ -149,10 +151,12 @@ class App extends React.Component {
   };
 
    tiger_post = async () => {
+   console.log(cookies.get("csrftoken"))
     fetch("http://zoo.com:8000/api/tiger/test_tiger_post/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        //"X-CSRFToken": cookies.get("csrftoken"),
         "X-CSRFToken": await this.getCSRF2(),
       },
       credentials: "include",
@@ -185,7 +189,11 @@ class App extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        //"X-CSRFToken": cookies.get("csrftoken"),
         "X-CSRFToken": await this.getCSRF2(),
+        // Best approach is :
+            // To read the CSRF token from the CSRF cookie before each POST request;
+            // If there’s no CSRF cookie, to make a request to a dedicated endpoint that generates a CSRF token and retry.
       },
       credentials: "include",
     })
